@@ -3,6 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Calendar, MapPin, Users } from "lucide-react"
+import { useState } from "react"
 
 interface EventCardProps {
   event: {
@@ -35,8 +36,35 @@ const categoryLabels: Record<string, string> = {
 }
 
 export default function EventCard({ event }: EventCardProps) {
+  const [loading, setLoading] = useState(false)
   const categoryColor = categoryColors[event.category] || "bg-gray-100 text-gray-700"
   const categoryLabel = categoryLabels[event.category] || event.category
+
+  const handleRegister = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) return alert("Veuillez vous connecter pour vous inscrire")
+
+    setLoading(true)
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/events/${event._id}/register`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.message || "Erreur lors de l'inscription")
+
+      alert("Inscription réussie 🎉")
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur inconnue")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <Link href={`/events/${event._id}`}>
@@ -71,7 +99,16 @@ export default function EventCard({ event }: EventCardProps) {
             </div>
           </div>
 
-          <button className="sup-button-primary w-full mt-6">Voir Détails</button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation() // empêche le Link de se déclencher
+              handleRegister()
+            }}
+            disabled={loading}
+            className="sup-button-primary w-full mt-6 flex items-center justify-center gap-2"
+          >
+            {loading ? "Inscription..." : "S'inscrire"}
+          </button>
         </div>
       </div>
     </Link>

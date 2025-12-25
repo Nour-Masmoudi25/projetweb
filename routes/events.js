@@ -62,7 +62,7 @@ router.post("/", authMiddleware, async (req, res) => {
       capacity,
       image,
       organizer: req.userId,
-      status: "draft",
+      status: "published",
     })
 
     await event.save()
@@ -104,6 +104,69 @@ router.post("/:id/register", authMiddleware, async (req, res) => {
     res.status(201).json({ message: "Registered successfully", registration })
   } catch (error) {
     res.status(500).json({ message: error.message })
+  }
+})
+// Publish event (club only)
+router.patch("/:id/publish", authMiddleware, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" })
+    }
+
+    // Vérifier que le club connecté est bien l'organisateur
+    if (event.organizer.toString() !== req.userId) {
+      return res.status(403).json({ message: "Not authorized to publish this event" })
+    }
+
+    event.status = "published"
+    await event.save()
+
+    res.json({ message: "Event published successfully", event })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+// Update event
+router.patch("/:id", authMiddleware, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+    if (!event) return res.status(404).json({ message: "Event not found" })
+
+    // Vérifie que seul l'organisateur peut modifier
+    if (event.organizer.toString() !== req.userId) {
+      return res.status(403).json({ message: "Not allowed" })
+    }
+
+    // Met à jour seulement les champs fournis
+    Object.keys(req.body).forEach((key) => {
+      event[key] = req.body[key]
+    })
+
+    await event.save()
+    res.json(event)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+// Delete event (club only)
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" })
+    }
+
+    // Only the club who created the event can delete it
+    if (event.organizer.toString() !== req.userId) {
+      return res.status(403).json({ message: "Not authorized to delete this event" })
+    }
+
+    await Event.findByIdAndDelete(req.params.id)
+    res.json({ message: "Event deleted successfully" })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
   }
 })
 

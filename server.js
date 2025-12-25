@@ -9,6 +9,7 @@ import userRoutes from "./routes/users.js"
 import { authMiddleware } from "./middleware/auth.js"
 
 dotenv.config()
+mongoose.set("strictQuery", true)
 
 const app = express()
 

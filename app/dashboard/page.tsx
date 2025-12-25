@@ -92,6 +92,20 @@ export default function DashboardPage() {
           <div className="lg:col-span-1">
             <div className="sup-card p-6 sticky top-20">
               <nav className="space-y-3">
+                {user.role === "club" && (
+                  <button
+                    onClick={() => setActiveTab("events")}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition font-poppins font-semibold ${
+                      activeTab === "events"
+                        ? "bg-[#004C97] text-white"
+                        : "bg-[#F4F4F4] text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    <BookOpen size={20} />
+                    Mes Événements
+                  </button>
+                )}
+
                 <button
                   onClick={() => setActiveTab("overview")}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition font-poppins font-semibold ${
@@ -228,6 +242,27 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
+            {activeTab === "events" && user.role === "club" && (
+              <div className="sup-card p-8">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="font-montserrat font-bold text-2xl text-[#000000]">
+                    Mes Événements
+                  </h2>
+
+                  <Link
+                    href="/dashboard/create-event"
+                    className="sup-button-primary"
+                  >
+                    + Créer un événement
+                  </Link>
+                </div>
+
+                <p className="text-gray-600 font-open-sans">
+                  Publiez et gérez les événements de votre club.
+                </p>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

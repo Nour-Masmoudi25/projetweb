@@ -1,6 +1,10 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 export default function HeroSection() {
+  const router = useRouter()
+
   return (
     <section className="sup-gradient py-20 md:py-32 px-4 md:px-8 text-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -12,12 +16,18 @@ export default function HeroSection() {
             Centralisons la vie associative. Trouvez, inscrivez-vous et participez aux événements les plus dynamiques de
             SUP'COM.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-white text-[#004C97] font-montserrat font-bold uppercase px-8 py-4 rounded-lg hover:bg-gray-100 transition">
+          <div className="flex">
+            <button
+              onClick={() => router.push("/events")}
+              className="
+                bg-white text-[#004C97] font-montserrat font-bold uppercase px-10 py-5 rounded-lg 
+                shadow-lg transform transition duration-300 ease-in-out 
+                hover:scale-105 hover:bg-gray-100 
+                active:scale-95 active:bg-[#FFD700] 
+                focus:outline-none focus:ring-4 focus:ring-yellow-300
+              "
+            >
               Explorer les Événements
-            </button>
-            <button className="border-2 border-white text-white font-montserrat font-bold uppercase px-8 py-4 rounded-lg hover:bg-white hover:bg-opacity-10 transition">
-              En Savoir Plus
             </button>
           </div>
         </div>
